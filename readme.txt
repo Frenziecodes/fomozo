@@ -12,15 +12,14 @@ Boost conversions with Fomozo: Social Proof & FOMO Notifications for WordPress.
 
 == Description ==
 
-Fomozo adds modern, lightweight social proof notifications to WordPress. Use demo mode for instant previews, or connect WooCommerce purchase activity when WooCommerce is available.
+Fomozo adds modern, lightweight social proof notifications to WordPress.
 
 Built for speed, trust, and extensibility.
 
 == Features ==
 
 * Lightweight frontend notification engine.
-* Demo mode with realistic sample notifications.
-* WooCommerce integration foundation.
+* WooCommerce integration.
 * Minimal onboarding and clean settings.
 * REST-powered notification delivery.
 * Translation-ready and developer-friendly.
@@ -34,4 +33,4 @@ Built for speed, trust, and extensibility.
 == Changelog ==
 
 = 1.0.0 =
-* Initial production-ready foundation.
+* Initial release.

@@ -1,13 +1,13 @@
 <?php
 /**
  * Plugin Name: Fomozo
- * Plugin URI: https://fomozo.com
+ * Plugin URI: https://github.com/Frenziecodes/Fomozo
  * Description: Boost conversions with Fomozo: Social Proof & FOMO Notifications for WordPress.
  * Version: 1.0.0
  * Requires at least: 6.2
  * Requires PHP: 8.0
- * Author: Fomozo Team
- * Author URI: https://fomozo.com
+ * Author: lewisushindi
+ * Author URI: https://github.com/Frenziecodes/
  * Text Domain: fomozo
  * Domain Path: /languages
  * License: GPL-3.0-or-later
@@ -16,7 +16,7 @@
  * @package Fomozo
  */
 
-declare(strict_types=1);
+declare( strict_types=1 );
 
 if (! defined('ABSPATH')) {
 	exit;
