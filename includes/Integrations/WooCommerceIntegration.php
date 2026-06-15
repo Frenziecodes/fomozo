@@ -12,9 +12,13 @@ namespace Fomozo\Integrations;
 use Fomozo\Notifications\NotificationProviderInterface;
 use Fomozo\Settings\SettingsRepository;
 
+/**
+ * Builds purchase notifications from recent WooCommerce orders.
+ */
 final class WooCommerceIntegration implements IntegrationInterface, NotificationProviderInterface {
 	private SettingsRepository $settings;
 
+	/** @param SettingsRepository $settings Plugin settings store. */
 	public function __construct(SettingsRepository $settings) {
 		$this->settings = $settings;
 	}
@@ -35,6 +39,7 @@ final class WooCommerceIntegration implements IntegrationInterface, Notification
 		return __('Show recent purchase activity as elegant social proof notifications.', 'fomozo');
 	}
 
+	/** Whether WooCommerce is active and usable. */
 	public function is_available(): bool {
 		return class_exists('WooCommerce') && function_exists('wc_get_orders');
 	}
@@ -43,6 +48,7 @@ final class WooCommerceIntegration implements IntegrationInterface, Notification
 		return $this->is_available();
 	}
 
+	/** Whether the store has at least one qualifying order. */
 	public function has_real_data(): bool {
 		if (! $this->is_available()) {
 			return false;
@@ -66,6 +72,11 @@ final class WooCommerceIntegration implements IntegrationInterface, Notification
 		return (int) $count > 0;
 	}
 
+	/**
+	 * Builds purchase notifications from recent orders.
+	 *
+	 * @return array<int, array<string, mixed>>
+	 */
 	public function notifications(int $limit): array {
 		if (! $this->is_available() || ! $this->settings->is_source_enabled('woocommerce')) {
 			return array();
@@ -118,6 +129,7 @@ final class WooCommerceIntegration implements IntegrationInterface, Notification
 		return $notifications;
 	}
 
+	/** Returns the name of the first line item in an order. */
 	private function first_item_name(object $order): string {
 		$items = $order->get_items();
 
@@ -130,6 +142,7 @@ final class WooCommerceIntegration implements IntegrationInterface, Notification
 		return __('a product', 'fomozo');
 	}
 
+	/** Returns the thumbnail URL of the first line item product. */
 	private function first_item_image(object $order): string {
 		$items = $order->get_items();
 

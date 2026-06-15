@@ -11,13 +11,18 @@ namespace Fomozo\Assets;
 
 use Fomozo\Settings\SettingsRepository;
 
+/**
+ * Registers and enqueues frontend and admin assets.
+ */
 final class AssetManager {
 	private SettingsRepository $settings;
 
+	/** @param SettingsRepository $settings Plugin settings store. */
 	public function __construct(SettingsRepository $settings) {
 		$this->settings = $settings;
 	}
 
+	/** Registers frontend styles, scripts, and localized config. */
 	public function register_frontend(): void {
 		wp_register_style(
 			'fomozo-frontend',
@@ -59,12 +64,18 @@ final class AssetManager {
 		);
 	}
 
+	/** Enqueues frontend assets on public pages. */
 	public function enqueue_frontend(): void {
 		$this->register_frontend();
 		wp_enqueue_style('fomozo-frontend');
 		wp_enqueue_script('fomozo-frontend');
 	}
 
+	/**
+	 * Enqueues admin assets on the Fomozo settings screen.
+	 *
+	 * @param string $hook Current admin page hook suffix.
+	 */
 	public function enqueue_admin(string $hook): void {
 		if ('toplevel_page_fomozo' !== $hook) {
 			return;

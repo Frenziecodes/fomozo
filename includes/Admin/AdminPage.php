@@ -13,6 +13,9 @@ use Fomozo\Assets\AssetManager;
 use Fomozo\Integrations\IntegrationRegistry;
 use Fomozo\Settings\SettingsRepository;
 
+/**
+ * Renders the settings screen and handles admin form submissions.
+ */
 final class AdminPage {
 	private SettingsRepository $settings;
 
@@ -20,12 +23,18 @@ final class AdminPage {
 
 	private AssetManager $assets;
 
+	/**
+	 * @param SettingsRepository  $settings     Settings store.
+	 * @param IntegrationRegistry $integrations Registered integrations.
+	 * @param AssetManager        $assets       Admin asset loader.
+	 */
 	public function __construct(SettingsRepository $settings, IntegrationRegistry $integrations, AssetManager $assets) {
 		$this->settings     = $settings;
 		$this->integrations = $integrations;
 		$this->assets       = $assets;
 	}
 
+	/** Registers admin menu, assets, and save handler hooks. */
 	public function register(): void {
 		add_action('admin_menu', array($this, 'add_menu'));
 		add_action('admin_enqueue_scripts', array($this->assets, 'enqueue_admin'));
@@ -33,6 +42,7 @@ final class AdminPage {
 		add_filter('plugin_action_links_' . FOMOZO_BASENAME, array($this, 'action_links'));
 	}
 
+	/** Adds the top-level Fomozo admin menu item. */
 	public function add_menu(): void {
 		add_menu_page(
 			__('Fomozo', 'fomozo'),
@@ -45,6 +55,12 @@ final class AdminPage {
 		);
 	}
 
+	/**
+	 * Prepends a Settings link on the plugins list screen.
+	 *
+	 * @param array<int, string> $links Existing plugin action links.
+	 * @return array<int, string>
+	 */
 	public function action_links(array $links): array {
 		$settings = sprintf(
 			'<a href="%1$s">%2$s</a>',
@@ -57,6 +73,7 @@ final class AdminPage {
 		return $links;
 	}
 
+	/** Validates and persists settings submitted from the admin form. */
 	public function save(): void {
 		if (! current_user_can('manage_options')) {
 			wp_die(esc_html__('You do not have permission to manage Fomozo settings.', 'fomozo'));
@@ -87,6 +104,7 @@ final class AdminPage {
 		exit;
 	}
 
+	/** Outputs the settings and onboarding admin page. */
 	public function render(): void {
 		if (! current_user_can('manage_options')) {
 			return;
@@ -200,6 +218,7 @@ final class AdminPage {
 		<?php
 	}
 
+	/** Renders a styled checkbox toggle field. */
 	private function toggle(string $name, string $label, string $description, bool $checked): void {
 		?>
 		<label class="fomozo-toggle">
@@ -215,6 +234,7 @@ final class AdminPage {
 		<?php
 	}
 
+	/** Renders a numeric settings field. */
 	private function number(string $name, string $label, string $description, int $value): void {
 		?>
 		<div class="fomozo-field">
@@ -227,6 +247,7 @@ final class AdminPage {
 		<?php
 	}
 
+	/** Renders an inline help tooltip trigger. */
 	private function help(string $description): void {
 		?>
 		<span class="fomozo-help" tabindex="0" aria-label="<?php echo esc_attr($description); ?>">

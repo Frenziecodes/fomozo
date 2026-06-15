@@ -18,15 +18,15 @@
 
 declare( strict_types=1 );
 
-if (! defined('ABSPATH')) {
+if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define('FOMOZO_VERSION', '1.0.0');
-define('FOMOZO_FILE', __FILE__);
-define('FOMOZO_PATH', plugin_dir_path(__FILE__));
-define('FOMOZO_URL', plugin_dir_url(__FILE__));
-define('FOMOZO_BASENAME', plugin_basename(__FILE__));
+define( 'FOMOZO_VERSION', '1.0.0' );
+define( 'FOMOZO_FILE', __FILE__ );
+define( 'FOMOZO_PATH', plugin_dir_path(__FILE__) );
+define( 'FOMOZO_URL', plugin_dir_url(__FILE__) );
+define( 'FOMOZO_BASENAME', plugin_basename(__FILE__) );
 
 require_once FOMOZO_PATH . 'includes/Autoloader.php';
 

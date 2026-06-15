@@ -10,6 +10,12 @@ declare(strict_types=1);
 namespace Fomozo\Notifications;
 
 final class NotificationSanitizer {
+	/**
+	 * Normalizes a raw notification payload for safe frontend use.
+	 *
+	 * @param array<string, mixed> $notification Raw notification data.
+	 * @return array<string, mixed>
+	 */
 	public static function sanitize(array $notification): array {
 		$type = sanitize_key((string) ($notification['type'] ?? 'notice'));
 
@@ -25,6 +31,7 @@ final class NotificationSanitizer {
 		);
 	}
 
+	/** Maps notification types to default icon keys. */
 	private static function icon_for_type(string $type): string {
 		return match ($type) {
 			'purchase' => 'bag',

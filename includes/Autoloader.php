@@ -9,7 +9,11 @@ declare(strict_types=1);
 
 namespace Fomozo;
 
+/**
+ * Registers the plugin PSR-4 autoloader.
+ */
 final class Autoloader {
+	/** Hooks the Fomozo namespace autoloader into SPL. */
 	public static function register(): void {
 		spl_autoload_register(
 			static function (string $class): void {

@@ -9,11 +9,15 @@ declare(strict_types=1);
 
 namespace Fomozo\Notifications;
 
+/**
+ * Supplies sample notifications for previews and onboarding.
+ */
 final class DemoNotificationProvider implements NotificationProviderInterface {
 	public function source(): string {
 		return 'demo';
 	}
 
+	/** @return array<int, array<string, mixed>> Demo notifications with fresh timestamps. */
 	public function notifications(int $limit): array {
 		$path = FOMOZO_PATH . 'data/demo-notifications.json';
 

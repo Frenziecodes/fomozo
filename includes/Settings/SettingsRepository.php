@@ -9,9 +9,13 @@ declare(strict_types=1);
 
 namespace Fomozo\Settings;
 
+/**
+ * Reads and writes plugin settings stored in the options table.
+ */
 final class SettingsRepository {
 	public const OPTION = 'fomozo_settings';
 
+	/** @return array<string, mixed> Default settings values. */
 	public static function defaults(): array {
 		return array(
 			'enabled'         => true,
@@ -25,12 +29,14 @@ final class SettingsRepository {
 		);
 	}
 
+	/** Seeds default settings on first install. */
 	public static function install_defaults(): void {
 		if (false === get_option(self::OPTION, false)) {
 			add_option(self::OPTION, self::defaults(), '', false);
 		}
 	}
 
+	/** @return array<string, mixed> Merged and sanitized settings. */
 	public function all(): array {
 		$settings = get_option(self::OPTION, array());
 
@@ -41,20 +47,33 @@ final class SettingsRepository {
 		return $this->sanitize(array_merge(self::defaults(), $settings));
 	}
 
+	/**
+	 * Persists partial setting updates.
+	 *
+	 * @param array<string, mixed> $settings Settings to merge and save.
+	 */
 	public function update(array $settings): void {
 		update_option(self::OPTION, $this->sanitize(array_merge($this->all(), $settings)), false);
 	}
 
+	/** Whether frontend notifications are enabled. */
 	public function is_enabled(): bool {
 		return (bool) $this->all()['enabled'];
 	}
 
+	/** Whether a notification source is enabled in settings. */
 	public function is_source_enabled(string $source): bool {
 		$settings = $this->all();
 
 		return in_array($source, $settings['enabled_sources'], true);
 	}
 
+	/**
+	 * Normalizes and validates raw settings input.
+	 *
+	 * @param array<string, mixed> $settings Raw settings values.
+	 * @return array<string, mixed>
+	 */
 	public function sanitize(array $settings): array {
 		$defaults  = self::defaults();
 		$positions = array('bottom-left', 'bottom-right', 'top-left', 'top-right');
