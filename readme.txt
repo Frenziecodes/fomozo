@@ -1,4 +1,4 @@
-=== Fomozo ===
+=== Noravo ===
 
 Contributors: lewisushindi
 Tags: social proof, fomo, notifications, woocommerce, conversions
@@ -8,13 +8,13 @@ Requires PHP: 8.0
 Stable tag: 1.0.0
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
-Donate link: https://github.com/Frenziecodes/fomozo
+Donate link: https://github.com/Frenziecodes/noravo
 
 Boost conversions with lightweight social proof and FOMO notifications for WordPress.
 
 == Description ==
 
-Fomozo helps WordPress site owners increase trust and conversions using modern social proof notifications.
+Noravo helps WordPress site owners increase trust and conversions using modern social proof notifications.
 
 Display recent purchases, signups, downloads, and other real-time activity notifications to create urgency and build credibility.
 
@@ -34,33 +34,33 @@ Built with performance, simplicity, and extensibility in mind.
 
 1. Upload the plugin folder to `/wp-content/plugins/`.
 2. Activate the plugin through the WordPress Plugins screen.
-3. Open the Fomozo menu from the WordPress admin dashboard.
+3. Open the Noravo menu from the WordPress admin dashboard.
 4. Configure your notification settings.
 
 == Frequently Asked Questions ==
 
-= Does Fomozo work with WooCommerce? =
+= Does Noravo work with WooCommerce? =
 
-Yes. Fomozo includes WooCommerce integration support for displaying recent purchase notifications.
+Yes. Noravo includes WooCommerce integration support for displaying recent purchase notifications.
 
-= Is Fomozo lightweight? =
+= Is Noravo lightweight? =
 
-Yes. Fomozo is built with performance-first principles and minimal frontend assets.
+Yes. Noravo is built with performance-first principles and minimal frontend assets.
 
-= Can developers extend Fomozo? =
+= Can developers extend Noravo? =
 
 Yes. The plugin is designed with extensibility and modern WordPress development practices in mind.
 
 == Screenshots ==
 
-1. Fomozo onboarding screen.
+1. Noravo onboarding screen.
 3. Live frontend social proof notification example.
 
 == Upgrade Notice ==
 
 = 1.0.0 =
 
-Initial public release of Fomozo.
+Initial public release of Noravo.
 
 == Changelog ==
 

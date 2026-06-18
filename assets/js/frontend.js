@@ -1,11 +1,11 @@
 (function () {
 	'use strict';
 
-	var config = window.fomozoConfig || {};
-	var root = document.getElementById('fomozo-root');
+	var config = window.noravoConfig || {};
+	var root = document.getElementById('noravo-root');
 
 	if (!root || !config.restUrl || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-		root && root.classList.add('fomozo-reduced-motion');
+		root && root.classList.add('noravo-reduced-motion');
 	}
 
 	if (!root || !config.restUrl) {
@@ -60,7 +60,7 @@
 
 	function build(notification) {
 		var item = document.createElement(notification.cta_url ? 'a' : 'div');
-		item.className = 'fomozo-toast';
+		item.className = 'noravo-toast';
 
 		if (notification.cta_url) {
 			item.href = notification.cta_url;
@@ -68,7 +68,7 @@
 
 		item.innerHTML = [
 			media(notification),
-			'<span class="fomozo-toast-body">',
+			'<span class="noravo-toast-body">',
 			'<strong>' + escapeHtml(text(notification.title)) + '</strong>',
 			'<span>' + escapeHtml(text(notification.message)) + '</span>',
 			'<small>' + escapeHtml(timeAgo(notification.timestamp)) + '</small>',
@@ -80,10 +80,10 @@
 
 	function media(notification) {
 		if (notification.image) {
-			return '<span class="fomozo-toast-image"><img src="' + escapeHtml(encodeURI(text(notification.image))) + '" alt=""></span>';
+			return '<span class="noravo-toast-image"><img src="' + escapeHtml(encodeURI(text(notification.image))) + '" alt=""></span>';
 		}
 
-		return '<span class="fomozo-toast-icon">' + icon(text(notification.icon)) + '</span>';
+		return '<span class="noravo-toast-icon">' + icon(text(notification.icon)) + '</span>';
 	}
 
 	function escapeHtml(value) {

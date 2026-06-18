@@ -2,12 +2,12 @@
 /**
  * Notification provider contract.
  *
- * @package Fomozo
+ * @package Noravo
  */
 
 declare( strict_types=1 );
 
-namespace Fomozo\Notifications;
+namespace Noravo\Notifications;
 
 interface NotificationProviderInterface {
 	/** Source key used in settings and API responses. */

@@ -2,12 +2,12 @@
 /**
  * Demo notification provider.
  *
- * @package Fomozo
+ * @package Noravo
  */
 
 declare(strict_types=1);
 
-namespace Fomozo\Notifications;
+namespace Noravo\Notifications;
 
 /**
  * Supplies sample notifications for previews and onboarding.
@@ -19,7 +19,7 @@ final class DemoNotificationProvider implements NotificationProviderInterface {
 
 	/** @return array<int, array<string, mixed>> Demo notifications with fresh timestamps. */
 	public function notifications(int $limit): array {
-		$path = FOMOZO_PATH . 'data/demo-notifications.json';
+		$path = NORAVO_PATH . 'data/demo-notifications.json';
 
 		if ( ! is_readable( $path ) ) {
 			return array();

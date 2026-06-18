@@ -2,18 +2,18 @@
 /**
  * Options-backed settings repository.
  *
- * @package Fomozo
+ * @package Noravo
  */
 
 declare( strict_types=1 );
 
-namespace Fomozo\Settings;
+namespace Noravo\Settings;
 
 /**
  * Reads and writes plugin settings stored in the options table.
  */
 final class SettingsRepository {
-	public const OPTION = 'fomozo_settings';
+	public const OPTION = 'noravo_settings';
 
 	/** @return array<string, mixed> Default settings values. */
 	public static function defaults(): array {

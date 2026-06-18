@@ -2,12 +2,12 @@
 /**
  * Notification provider registry.
  *
- * @package Fomozo
+ * @package Noravo
  */
 
 declare( strict_types=1 );
 
-namespace Fomozo\Notifications;
+namespace Noravo\Notifications;
 
 /**
  * Collects notifications from registered providers.

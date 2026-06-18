@@ -1,14 +1,14 @@
 <?php
 /**
- * Uninstall cleanup for Fomozo.
+ * Uninstall cleanup for Noravo.
  *
- * @package Fomozo
+ * @package Noravo
  */
 
-if (! defined('WP_UNINSTALL_PLUGIN')) {
+if ( ! defined('WP_UNINSTALL_PLUGIN')) {
 	exit;
 }
 
-delete_option('fomozo_settings');
-delete_option('fomozo_onboarding_complete');
-delete_transient('fomozo_wc_order_count');
+delete_option('noravo_settings');
+delete_option('noravo_onboarding_complete');
+delete_transient('noravo_wc_order_count');

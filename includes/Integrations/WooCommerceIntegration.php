@@ -2,15 +2,15 @@
 /**
  * WooCommerce notification integration.
  *
- * @package Fomozo
+ * @package Noravo
  */
 
 declare(strict_types=1);
 
-namespace Fomozo\Integrations;
+namespace Noravo\Integrations;
 
-use Fomozo\Notifications\NotificationProviderInterface;
-use Fomozo\Settings\SettingsRepository;
+use Noravo\Notifications\NotificationProviderInterface;
+use Noravo\Settings\SettingsRepository;
 
 /**
  * Builds purchase notifications from recent WooCommerce orders.
@@ -32,11 +32,11 @@ final class WooCommerceIntegration implements IntegrationInterface, Notification
 	}
 
 	public function label(): string {
-		return __('WooCommerce', 'fomozo');
+		return __('WooCommerce', 'noravo');
 	}
 
 	public function description(): string {
-		return __('Show recent purchase activity as elegant social proof notifications.', 'fomozo');
+		return __('Show recent purchase activity as elegant social proof notifications.', 'noravo');
 	}
 
 	/** Whether WooCommerce is active and usable. */
@@ -54,7 +54,7 @@ final class WooCommerceIntegration implements IntegrationInterface, Notification
 			return false;
 		}
 
-		$count = get_transient('fomozo_wc_order_count');
+		$count = get_transient('noravo_wc_order_count');
 
 		if (false === $count) {
 			$orders = wc_get_orders(
@@ -66,7 +66,7 @@ final class WooCommerceIntegration implements IntegrationInterface, Notification
 			);
 
 			$count = is_array($orders) ? count($orders) : 0;
-			set_transient('fomozo_wc_order_count', $count, HOUR_IN_SECONDS);
+			set_transient('noravo_wc_order_count', $count, HOUR_IN_SECONDS);
 		}
 
 		return (int) $count > 0;
@@ -106,16 +106,16 @@ final class WooCommerceIntegration implements IntegrationInterface, Notification
 			$city      = sanitize_text_field((string) $order->get_billing_city());
 			$place     = $city ? sprintf(
 				/* translators: %s is a city name. */
-				__('Someone in %s', 'fomozo'),
+				__('Someone in %s', 'noravo'),
 				$city
-			) : __('A customer', 'fomozo');
+			) : __('A customer', 'noravo');
 
 			$notifications[] = array(
 				'type'      => 'purchase',
-				'title'     => __('New purchase', 'fomozo'),
+				'title'     => __('New purchase', 'noravo'),
 				'message'   => sprintf(
 					/* translators: 1: customer place label, 2: product name. */
-					__('%1$s purchased %2$s', 'fomozo'),
+					__('%1$s purchased %2$s', 'noravo'),
 					$place,
 					$item_name
 				),
@@ -139,7 +139,7 @@ final class WooCommerceIntegration implements IntegrationInterface, Notification
 			}
 		}
 
-		return __('a product', 'fomozo');
+		return __('a product', 'noravo');
 	}
 
 	/** Returns the thumbnail URL of the first line item product. */

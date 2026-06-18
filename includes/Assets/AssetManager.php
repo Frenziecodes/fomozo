@@ -2,14 +2,14 @@
 /**
  * Asset registration.
  *
- * @package Fomozo
+ * @package Noravo
  */
 
 declare(strict_types=1);
 
-namespace Fomozo\Assets;
+namespace Noravo\Assets;
 
-use Fomozo\Settings\SettingsRepository;
+use Noravo\Settings\SettingsRepository;
 
 /**
  * Registers and enqueues frontend and admin assets.
@@ -25,40 +25,40 @@ final class AssetManager {
 	/** Registers frontend styles, scripts, and localized config. */
 	public function register_frontend(): void {
 		wp_register_style(
-			'fomozo-frontend',
-			FOMOZO_URL . 'assets/css/frontend.css',
+			'noravo-frontend',
+			NORAVO_URL . 'assets/css/frontend.css',
 			array(),
-			FOMOZO_VERSION
+			NORAVO_VERSION
 		);
 
 		wp_register_script(
-			'fomozo-frontend',
-			FOMOZO_URL . 'assets/js/frontend.js',
+			'noravo-frontend',
+			NORAVO_URL . 'assets/js/frontend.js',
 			array(),
-			FOMOZO_VERSION,
+			NORAVO_VERSION,
 			true
 		);
 
 		$settings = $this->settings->all();
 
 		wp_localize_script(
-			'fomozo-frontend',
-			'fomozoConfig',
+			'noravo-frontend',
+			'noravoConfig',
 			array(
-				'restUrl'      => esc_url_raw(rest_url('fomozo/v1/notifications')),
+				'restUrl'      => esc_url_raw(rest_url('noravo/v1/notifications')),
 				'position'     => $settings['position'],
 				'animation'    => $settings['animation'],
 				'initialDelay' => $settings['initial_delay'],
 				'interval'     => $settings['interval'],
 				'maxPerPage'   => $settings['max_per_page'],
 				'i18n'         => array(
-					'justNow'    => __('Just now', 'fomozo'),
-					'minuteAgo'  => __('1 minute ago', 'fomozo'),
+					'justNow'    => __('Just now', 'noravo'),
+					'minuteAgo'  => __('1 minute ago', 'noravo'),
 					/* translators: %d is the number of minutes since the notification event. */
-					'minutesAgo' => __('%d minutes ago', 'fomozo'),
-					'hourAgo'    => __('1 hour ago', 'fomozo'),
+					'minutesAgo' => __('%d minutes ago', 'noravo'),
+					'hourAgo'    => __('1 hour ago', 'noravo'),
 					/* translators: %d is the number of hours since the notification event. */
-					'hoursAgo'   => __('%d hours ago', 'fomozo'),
+					'hoursAgo'   => __('%d hours ago', 'noravo'),
 				),
 			)
 		);
@@ -67,25 +67,25 @@ final class AssetManager {
 	/** Enqueues frontend assets on public pages. */
 	public function enqueue_frontend(): void {
 		$this->register_frontend();
-		wp_enqueue_style('fomozo-frontend');
-		wp_enqueue_script('fomozo-frontend');
+		wp_enqueue_style('noravo-frontend');
+		wp_enqueue_script('noravo-frontend');
 	}
 
 	/**
-	 * Enqueues admin assets on the Fomozo settings screen.
+	 * Enqueues admin assets on the Noravo settings screen.
 	 *
 	 * @param string $hook Current admin page hook suffix.
 	 */
 	public function enqueue_admin(string $hook): void {
-		if ('toplevel_page_fomozo' !== $hook) {
+		if ('toplevel_page_noravo' !== $hook) {
 			return;
 		}
 
 		wp_enqueue_style(
-			'fomozo-admin',
-			FOMOZO_URL . 'assets/css/admin.css',
+			'noravo-admin',
+			NORAVO_URL . 'assets/css/admin.css',
 			array(),
-			FOMOZO_VERSION
+			NORAVO_VERSION
 		);
 	}
 }

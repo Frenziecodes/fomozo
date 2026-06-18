@@ -2,12 +2,12 @@
 /**
  * Integration contract.
  *
- * @package Fomozo
+ * @package Noravo
  */
 
 declare(strict_types=1);
 
-namespace Fomozo\Integrations;
+namespace Noravo\Integrations;
 
 interface IntegrationInterface {
 	/** Unique integration identifier. */

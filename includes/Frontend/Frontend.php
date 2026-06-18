@@ -2,15 +2,15 @@
 /**
  * Frontend integration.
  *
- * @package Fomozo
+ * @package Noravo
  */
 
 declare(strict_types=1);
 
-namespace Fomozo\Frontend;
+namespace Noravo\Frontend;
 
-use Fomozo\Assets\AssetManager;
-use Fomozo\Settings\SettingsRepository;
+use Noravo\Assets\AssetManager;
+use Noravo\Settings\SettingsRepository;
 
 /**
  * Loads frontend assets and renders the notification mount point.
@@ -53,7 +53,7 @@ final class Frontend {
 		$settings = $this->settings->all();
 
 		printf(
-			'<div id="fomozo-root" class="fomozo-root fomozo-%1$s fomozo-animation-%2$s" aria-live="polite" aria-atomic="true"></div>',
+			'<div id="noravo-root" class="noravo-root noravo-%1$s noravo-animation-%2$s" aria-live="polite" aria-atomic="true"></div>',
 			esc_attr($settings['position']),
 			esc_attr($settings['animation'])
 		);

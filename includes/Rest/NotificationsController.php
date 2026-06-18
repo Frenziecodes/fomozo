@@ -2,15 +2,15 @@
 /**
  * Notifications REST endpoint.
  *
- * @package Fomozo
+ * @package Noravo
  */
 
 declare(strict_types=1);
 
-namespace Fomozo\Rest;
+namespace Noravo\Rest;
 
-use Fomozo\Notifications\NotificationProviderRegistry;
-use Fomozo\Settings\SettingsRepository;
+use Noravo\Notifications\NotificationProviderRegistry;
+use Noravo\Settings\SettingsRepository;
 use WP_REST_Request;
 use WP_REST_Response;
 
@@ -39,7 +39,7 @@ final class NotificationsController {
 	/** Registers the notifications collection route. */
 	public function register_routes(): void {
 		register_rest_route(
-			'fomozo/v1',
+			'noravo/v1',
 			'/notifications',
 			array(
 				'methods'             => 'GET',

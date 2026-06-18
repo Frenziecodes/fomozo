@@ -2,29 +2,29 @@
 /**
  * Minimal PSR-4 autoloader.
  *
- * @package Fomozo
+ * @package Noravo
  */
 
 declare( strict_types=1 );
 
-namespace Fomozo;
+namespace Noravo;
 
 /**
  * Registers the plugin PSR-4 autoloader.
  */
 final class Autoloader {
-	/** Hooks the Fomozo namespace autoloader into SPL. */
+	/** Hooks the Noravo namespace autoloader into SPL. */
 	public static function register(): void {
 		spl_autoload_register(
 			static function ( string $class ): void {
-				$prefix = 'Fomozo\\';
+				$prefix = 'Noravo\\';
 
 				if ( 0 !== strpos( $class, $prefix ) ) {
 					return;
 				}
 
 				$relative = substr( $class, strlen( $prefix ) );
-				$path     = FOMOZO_PATH . 'includes/' . str_replace('\\', '/', $relative) . '.php';
+				$path     = NORAVO_PATH . 'includes/' . str_replace('\\', '/', $relative) . '.php';
 
 				if ( is_readable( $path ) ) {
 					require_once $path;

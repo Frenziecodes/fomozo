@@ -2,22 +2,22 @@
 /**
  * Main plugin composition root.
  *
- * @package Fomozo
+ * @package Noravo
  */
 
 declare( strict_types=1 );
 
-namespace Fomozo;
+namespace Noravo;
 
-use Fomozo\Admin\AdminPage;
-use Fomozo\Assets\AssetManager;
-use Fomozo\Frontend\Frontend;
-use Fomozo\Integrations\IntegrationRegistry;
-use Fomozo\Integrations\WooCommerceIntegration;
-use Fomozo\Notifications\DemoNotificationProvider;
-use Fomozo\Notifications\NotificationProviderRegistry;
-use Fomozo\Rest\NotificationsController;
-use Fomozo\Settings\SettingsRepository;
+use Noravo\Admin\AdminPage;
+use Noravo\Assets\AssetManager;
+use Noravo\Frontend\Frontend;
+use Noravo\Integrations\IntegrationRegistry;
+use Noravo\Integrations\WooCommerceIntegration;
+use Noravo\Notifications\DemoNotificationProvider;
+use Noravo\Notifications\NotificationProviderRegistry;
+use Noravo\Rest\NotificationsController;
+use Noravo\Settings\SettingsRepository;
 
 /**
  * Bootstraps services and wires plugin hooks.
@@ -43,7 +43,7 @@ final class Plugin {
 	/** Runs first-time setup on plugin activation. */
 	public static function activate(): void {
 		SettingsRepository::install_defaults();
-		add_option( 'fomozo_onboarding_complete', 'no', '', false );
+		add_option( 'noravo_onboarding_complete', 'no', '', false );
 	}
 
 	/** Initializes registries, assets, and frontend/admin hooks. */
@@ -75,7 +75,7 @@ final class Plugin {
 		 *
 		 * @param NotificationProviderRegistry $providers Provider registry.
 		 */
-		do_action( 'fomozo_register_notification_providers', $this->providers );
+		do_action( 'noravo_register_notification_providers', $this->providers );
 	}
 
 	/** Registers integrations and their notification providers when available. */
@@ -92,7 +92,7 @@ final class Plugin {
 		 *
 		 * @param IntegrationRegistry $integrations Integration registry.
 		 */
-		do_action( 'fomozo_register_integrations', $this->integrations );
+		do_action( 'noravo_register_integrations', $this->integrations );
 	}
 
 	/** Disables demo mode once WooCommerce has real order data. */

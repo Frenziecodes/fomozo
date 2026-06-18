@@ -2,12 +2,12 @@
 /**
  * Integration registry.
  *
- * @package Fomozo
+ * @package Noravo
  */
 
 declare(strict_types=1);
 
-namespace Fomozo\Integrations;
+namespace Noravo\Integrations;
 
 /**
  * Stores registered third-party integrations.

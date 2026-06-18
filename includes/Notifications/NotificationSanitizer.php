@@ -2,12 +2,12 @@
 /**
  * Notification data sanitizer.
  *
- * @package Fomozo
+ * @package Noravo
  */
 
 declare(strict_types=1);
 
-namespace Fomozo\Notifications;
+namespace Noravo\Notifications;
 
 final class NotificationSanitizer {
 	/**

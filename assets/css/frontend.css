@@ -1,4 +1,4 @@
-.fomozo-root {
+.noravo-root {
 	position: fixed;
 	z-index: 99998;
 	display: flex;
@@ -6,27 +6,27 @@
 	pointer-events: none;
 }
 
-.fomozo-bottom-left,
-.fomozo-bottom-right {
+.noravo-bottom-left,
+.noravo-bottom-right {
 	bottom: 24px;
 }
 
-.fomozo-top-left,
-.fomozo-top-right {
+.noravo-top-left,
+.noravo-top-right {
 	top: 24px;
 }
 
-.fomozo-bottom-left,
-.fomozo-top-left {
+.noravo-bottom-left,
+.noravo-top-left {
 	left: 24px;
 }
 
-.fomozo-bottom-right,
-.fomozo-top-right {
+.noravo-bottom-right,
+.noravo-top-right {
 	right: 24px;
 }
 
-.fomozo-toast {
+.noravo-toast {
 	display: grid;
 	grid-template-columns: 42px 1fr;
 	gap: 12px;
@@ -45,22 +45,22 @@
 	backdrop-filter: blur(14px);
 }
 
-.fomozo-animation-fade .fomozo-toast {
+.noravo-animation-fade .noravo-toast {
 	transform: none;
 }
 
-.fomozo-toast.is-visible {
+.noravo-toast.is-visible {
 	opacity: 1;
 	transform: translateY(0);
 }
 
-.fomozo-toast:hover {
+.noravo-toast:hover {
 	color: #172026;
 	border-color: rgba(24, 119, 242, 0.28);
 }
 
-.fomozo-toast-icon,
-.fomozo-toast-image {
+.noravo-toast-icon,
+.noravo-toast-image {
 	display: grid;
 	width: 42px;
 	height: 42px;
@@ -69,42 +69,42 @@
 	overflow: hidden;
 }
 
-.fomozo-toast-icon {
+.noravo-toast-icon {
 	color: #0f766e;
 	background: #e6fffa;
 }
 
-.fomozo-toast-icon svg {
+.noravo-toast-icon svg {
 	width: 22px;
 	height: 22px;
 	fill: currentColor;
 }
 
-.fomozo-toast-image img {
+.noravo-toast-image img {
 	width: 100%;
 	height: 100%;
 	object-fit: cover;
 }
 
-.fomozo-toast-body {
+.noravo-toast-body {
 	display: grid;
 	gap: 2px;
 	min-width: 0;
 }
 
-.fomozo-toast-body strong {
+.noravo-toast-body strong {
 	font-size: 14px;
 	font-weight: 700;
 	line-height: 1.25;
 }
 
-.fomozo-toast-body span {
+.noravo-toast-body span {
 	font-size: 13px;
 	line-height: 1.4;
 	color: #44515a;
 }
 
-.fomozo-toast-body small {
+.noravo-toast-body small {
 	margin-top: 2px;
 	font-size: 11px;
 	line-height: 1.2;
@@ -112,7 +112,7 @@
 }
 
 @media (max-width: 520px) {
-	.fomozo-root {
+	.noravo-root {
 		right: 16px;
 		bottom: 16px;
 		left: 16px;
@@ -122,7 +122,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-	.fomozo-toast {
+	.noravo-toast {
 		transition: none;
 		transform: none;
 	}
