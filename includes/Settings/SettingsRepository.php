@@ -23,6 +23,7 @@ final class SettingsRepository {
 			'position'        => 'bottom-left',
 			'animation'       => 'slide',
 			'time_format'     => 'rounded',
+			'customer_display' => 'location',
 			'initial_delay'   => 2500,
 			'interval'        => 9000,
 			'max_per_page'    => 5,
@@ -80,6 +81,7 @@ final class SettingsRepository {
 		$positions    = array( 'bottom-left', 'bottom-right', 'top-left', 'top-right' );
 		$animations   = array( 'slide', 'fade' );
 		$time_formats = array( 'rounded', 'days_hours', 'full' );
+		$customer_displays = array( 'location', 'full_name', 'masked_name' );
 
 		$sources = isset( $settings['enabled_sources'] ) && is_array( $settings['enabled_sources'] )
 			? array_map( 'sanitize_key', $settings['enabled_sources'])
@@ -91,6 +93,7 @@ final class SettingsRepository {
 			'position'        => in_array( $settings['position'] ?? '', $positions, true) ? $settings['position'] : $defaults['position'],
 			'animation'       => in_array( $settings['animation'] ?? '', $animations, true) ? $settings['animation'] : $defaults['animation'],
 			'time_format'     => in_array( $settings['time_format'] ?? '', $time_formats, true) ? $settings['time_format'] : $defaults['time_format'],
+			'customer_display' => in_array( $settings['customer_display'] ?? '', $customer_displays, true) ? $settings['customer_display'] : $defaults['customer_display'],
 			'initial_delay'   => max(0, min(60000, absint( $settings['initial_delay'] ?? $defaults['initial_delay']))),
 			'interval'        => max(3000, min(120000, absint( $settings['interval'] ?? $defaults['interval']))),
 			'max_per_page'    => max(1, min(20, absint( $settings['max_per_page'] ?? $defaults['max_per_page']))),

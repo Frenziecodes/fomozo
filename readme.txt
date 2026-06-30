@@ -63,6 +63,7 @@ Yes. The plugin is designed with extensibility and modern WordPress development 
 
 Add composer
 Implement time display settings
+Implement Customer name display settings.
 
 = 1.0.2 =
 
@@ -82,6 +83,7 @@ Initial release.
 
 * Add composer.
 * Implement time display settings.
+* Implement Customer name display settings.
 
 = 1.0.2 =
 

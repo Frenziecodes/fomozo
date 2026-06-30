@@ -95,7 +95,9 @@ final class WooCommerceIntegration implements IntegrationInterface, Notification
 			return array();
 		}
 
-		$notifications = array();
+		$settings         = $this->settings->all();
+		$customer_display = (string) ($settings['customer_display'] ?? 'location');
+		$notifications    = array();
 
 		foreach ($orders as $order) {
 			if (! is_a($order, 'WC_Order')) {
@@ -103,20 +105,15 @@ final class WooCommerceIntegration implements IntegrationInterface, Notification
 			}
 
 			$item_name = $this->first_item_name($order);
-			$city      = sanitize_text_field((string) $order->get_billing_city());
-			$place     = $city ? sprintf(
-				/* translators: %s is a city name. */
-				__('Someone in %s', 'noravo'),
-				$city
-			) : __('A customer', 'noravo');
+			$customer = $this->customer_label($order, $customer_display);
 
 			$notifications[] = array(
 				'type'      => 'purchase',
 				'title'     => __('New purchase', 'noravo'),
 				'message'   => sprintf(
-					/* translators: 1: customer place label, 2: product name. */
+					/* translators: 1: customer label, 2: product name. */
 					__('%1$s purchased %2$s', 'noravo'),
-					$place,
+					$customer,
 					$item_name
 				),
 				'timestamp' => $order->get_date_created() ? $order->get_date_created()->getTimestamp() : time(),
@@ -127,6 +124,86 @@ final class WooCommerceIntegration implements IntegrationInterface, Notification
 		}
 
 		return $notifications;
+	}
+
+	/** Returns the customer label based on the store owner's privacy setting. */
+	private function customer_label(object $order, string $display): string {
+		if ('full_name' === $display) {
+			$name = $this->customer_name($order, false);
+
+			if ('' !== $name) {
+				return $name;
+			}
+		}
+
+		if ('masked_name' === $display) {
+			$name = $this->customer_name($order, true);
+
+			if ('' !== $name) {
+				return $name;
+			}
+		}
+
+		return $this->customer_location($order);
+	}
+
+	/** Returns the customer's name, optionally masking every name after the first. */
+	private function customer_name(object $order, bool $mask_last_names): string {
+		$first_name = method_exists($order, 'get_billing_first_name')
+			? sanitize_text_field((string) $order->get_billing_first_name())
+			: '';
+		$last_name  = method_exists($order, 'get_billing_last_name')
+			? sanitize_text_field((string) $order->get_billing_last_name())
+			: '';
+		$parts      = preg_split('/\s+/', trim($first_name . ' ' . $last_name));
+
+		if (! is_array($parts)) {
+			return '';
+		}
+
+		$parts = array_values(array_filter($parts));
+
+		if (empty($parts)) {
+			return '';
+		}
+
+		if (! $mask_last_names || 1 === count($parts)) {
+			return implode(' ', $parts);
+		}
+
+		foreach ($parts as $index => $part) {
+			if (0 === $index) {
+				continue;
+			}
+
+			$parts[$index] = $this->mask_name_part($part);
+		}
+
+		return implode(' ', $parts);
+	}
+
+	/** Returns the location-based anonymous customer label. */
+	private function customer_location(object $order): string {
+		$city = method_exists($order, 'get_billing_city')
+			? sanitize_text_field((string) $order->get_billing_city())
+			: '';
+
+		if ('' === $city) {
+			return __('A customer', 'noravo');
+		}
+
+		return sprintf(
+			/* translators: %s is a city name. */
+			__('Someone in %s', 'noravo'),
+			$city
+		);
+	}
+
+	/** Masks a name part while keeping the first letter visible. */
+	private function mask_name_part(string $name): string {
+		$first_letter = function_exists('mb_substr') ? mb_substr($name, 0, 1) : substr($name, 0, 1);
+
+		return $first_letter . '***';
 	}
 
 	/** Returns the name of the first line item in an order. */
