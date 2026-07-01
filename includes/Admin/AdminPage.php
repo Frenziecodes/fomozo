@@ -54,11 +54,14 @@ final class AdminPage {
 			58
 		);
 
-		global $submenu;
-
-		if ( isset( $submenu['noravo'][0][0]) ) {
-			$submenu['noravo'][0][0] = __( 'Dashboard', 'noravo' );
-		}
+		add_submenu_page(
+			'noravo',
+			__( 'Dashboard', 'noravo' ),
+			__( 'Dashboard', 'noravo' ),
+			'manage_options',
+			'noravo',
+			array( $this, 'render_dashboard' )
+		);
 
 		add_submenu_page(
 			'noravo',
