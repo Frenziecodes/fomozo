@@ -45,13 +45,55 @@ final class AdminPage {
 	/** Adds the top-level Noravo admin menu item. */
 	public function add_menu(): void {
 		add_menu_page(
-			__( 'Noravo', 'noravo' ),
+			__( 'Dashboard', 'noravo' ),
 			__( 'Noravo', 'noravo' ),
 			'manage_options',
 			'noravo',
-			array( $this, 'render' ),
+			array( $this, 'render_dashboard' ),
 			'dashicons-megaphone',
 			58
+		);
+
+		global $submenu;
+
+		if ( isset( $submenu['noravo'][0][0]) ) {
+			$submenu['noravo'][0][0] = __( 'Dashboard', 'noravo' );
+		}
+
+		add_submenu_page(
+			'noravo',
+			__( 'Campaigns', 'noravo' ),
+			__( 'Campaigns', 'noravo' ),
+			'manage_options',
+			'noravo-campaigns',
+			array( $this, 'render_campaigns' )
+		);
+
+		add_submenu_page(
+			'noravo',
+			__( 'Integrations', 'noravo' ),
+			__( 'Integrations', 'noravo' ),
+			'manage_options',
+			'noravo-integrations',
+			array( $this, 'render_integrations' )
+		);
+
+		add_submenu_page(
+			'noravo',
+			__( 'Appearance', 'noravo' ),
+			__( 'Appearance', 'noravo' ),
+			'manage_options',
+			'noravo-appearance',
+			array( $this, 'render_appearance' )
+		);
+
+		add_submenu_page(
+			'noravo',
+			__( 'Settings', 'noravo' ),
+			__( 'Settings', 'noravo' ),
+			'manage_options',
+			'noravo-settings',
+			array( $this, 'render_settings' )
 		);
 	}
 
@@ -64,7 +106,7 @@ final class AdminPage {
 	public function action_links(array $links): array {
 		$settings = sprintf(
 			'<a href="%1$s">%2$s</a>',
-			esc_url(admin_url( 'admin.php?page=noravo' ) ),
+			esc_url(admin_url( 'admin.php?page=noravo-settings' ) ),
 			esc_html__( 'Settings', 'noravo' )
 		);
 
@@ -81,33 +123,47 @@ final class AdminPage {
 
 		check_admin_referer( 'noravo_save_settings' );
 
-		$enabled_sources = isset( $_POST['enabled_sources'])
-			? array_map( 'sanitize_key', (array) wp_unslash( $_POST['enabled_sources']) )
-			: array();
+		$form    = isset( $_POST['noravo_form']) ? sanitize_key(wp_unslash( $_POST['noravo_form']) ) : '';
+		$updates = array();
 
-		$this->settings->update(
-			array(
-				'enabled'         => isset( $_POST['enabled']),
-				'demo_mode'       => isset( $_POST['demo_mode']),
-				'position'        => isset( $_POST['position']) ? sanitize_text_field(wp_unslash( $_POST['position']) ) : '',
-				'animation'       => isset( $_POST['animation']) ? sanitize_text_field(wp_unslash( $_POST['animation']) ) : '',
-				'time_format'     => isset( $_POST['time_format']) ? sanitize_text_field(wp_unslash( $_POST['time_format']) ) : '',
-				'customer_display' => isset( $_POST['customer_display']) ? sanitize_text_field(wp_unslash( $_POST['customer_display']) ) : '',
-				'initial_delay'   => isset( $_POST['initial_delay']) ? absint(wp_unslash( $_POST['initial_delay']) ) : 0,
-				'interval'        => isset( $_POST['interval']) ? absint(wp_unslash( $_POST['interval']) ) : 0,
-				'max_per_page'    => isset( $_POST['max_per_page']) ? absint(wp_unslash( $_POST['max_per_page']) ) : 0,
-				'enabled_sources' => $enabled_sources,
-			)
-		);
+		if ( 'campaigns' === $form ) {
+			$updates['enabled']   = isset( $_POST['enabled']);
+			$updates['demo_mode'] = isset( $_POST['demo_mode']);
+		}
+
+		if ( 'integrations' === $form ) {
+			$updates['enabled_sources'] = isset( $_POST['enabled_sources'])
+				? array_map( 'sanitize_key', (array) wp_unslash( $_POST['enabled_sources']) )
+				: array();
+		}
+
+		if ( 'appearance' === $form ) {
+			$updates['position']  = isset( $_POST['position']) ? sanitize_text_field(wp_unslash( $_POST['position']) ) : '';
+			$updates['animation'] = isset( $_POST['animation']) ? sanitize_text_field(wp_unslash( $_POST['animation']) ) : '';
+		}
+
+		if ( 'settings' === $form ) {
+			$updates['time_format']      = isset( $_POST['time_format']) ? sanitize_text_field(wp_unslash( $_POST['time_format']) ) : '';
+			$updates['customer_display'] = isset( $_POST['customer_display']) ? sanitize_text_field(wp_unslash( $_POST['customer_display']) ) : '';
+			$updates['initial_delay']    = isset( $_POST['initial_delay']) ? absint(wp_unslash( $_POST['initial_delay']) ) : 0;
+			$updates['interval']         = isset( $_POST['interval']) ? absint(wp_unslash( $_POST['interval']) ) : 0;
+			$updates['max_per_page']     = isset( $_POST['max_per_page']) ? absint(wp_unslash( $_POST['max_per_page']) ) : 0;
+		}
+
+		if ( ! empty( $updates) ) {
+			$this->settings->update( $updates);
+		}
 
 		update_option( 'noravo_onboarding_complete', 'yes', false);
 
-		wp_safe_redirect(wp_nonce_url(add_query_arg( 'updated', 'true', admin_url( 'admin.php?page=noravo' ) ), 'noravo_settings_updated' ) );
+		$redirect = isset( $_POST['redirect_to']) ? esc_url_raw(wp_unslash( $_POST['redirect_to']) ) : admin_url( 'admin.php?page=noravo' );
+
+		wp_safe_redirect(wp_nonce_url(add_query_arg( 'updated', 'true', $redirect), 'noravo_settings_updated' ) );
 		exit;
 	}
 
-	/** Outputs the settings and onboarding admin page. */
-	public function render(): void {
+	/** Outputs the dashboard admin page. */
+	public function render_dashboard(): void {
 		if (! current_user_can( 'manage_options' ) ) {
 			return;
 		}
@@ -115,27 +171,12 @@ final class AdminPage {
 		$settings       = $this->settings->all();
 		$is_onboarding  = 'yes' !== get_option( 'noravo_onboarding_complete', 'no' );
 		$integrations   = $this->integrations->all();
-		$enabled_sources = $settings['enabled_sources'];
-		$show_updated    = isset( $_GET['updated'], $_GET['_wpnonce'])
-			&& wp_verify_nonce(sanitize_text_field(wp_unslash( $_GET['_wpnonce']) ), 'noravo_settings_updated' )
-			&& 'true' === sanitize_text_field(wp_unslash( $_GET['updated']) );
+		$enabled_count  = count( $settings['enabled_sources']);
 		?>
 		<div class="wrap noravo-admin">
 			<div class="noravo-shell">
-				<header class="noravo-hero">
-					<div>
-						<p class="noravo-kicker"><?php esc_html_e( 'Modern social proof and trust signals for WordPress', 'noravo' ); ?></p>
-						<h1><?php esc_html_e( 'Noravo', 'noravo' ); ?></h1>
-						<p><?php esc_html_e( 'Launch subtle, believable conversion notifications without adding bloat to your site.', 'noravo' ); ?></p>
-					</div>
-					<div class="noravo-status">
-						<span><?php echo $settings['enabled'] ? esc_html__( 'Live', 'noravo' ) : esc_html__( 'Paused', 'noravo' ); ?></span>
-					</div>
-				</header>
-
-				<?php if ( $show_updated) : ?>
-					<div class="notice notice-success is-dismissible"><p><?php esc_html_e( 'Noravo settings saved.', 'noravo' ); ?></p></div>
-				<?php endif; ?>
+				<?php $this->header( __( 'Dashboard', 'noravo' ), __( 'Overview of notifications and plugin status.', 'noravo' ), $settings); ?>
+				<?php $this->updated_notice(); ?>
 
 				<?php if ( $is_onboarding) : ?>
 					<section class="noravo-panel noravo-onboarding">
@@ -154,18 +195,95 @@ final class AdminPage {
 					</section>
 				<?php endif; ?>
 
-				<form method="post" action="<?php echo esc_url(admin_url( 'admin-post.php' ) ); ?>" class="noravo-grid">
-					<input type="hidden" name="action" value="noravo_save_settings">
-					<?php wp_nonce_field( 'noravo_save_settings' ); ?>
-
+				<div class="noravo-grid">
 					<section class="noravo-panel">
-						<h2><?php esc_html_e( 'General', 'noravo' ); ?></h2>
-						<?php $this->toggle( 'enabled', __( 'Enable notifications', 'noravo' ), __( 'Show Noravo notifications on the frontend.', 'noravo' ), $settings['enabled']); ?>
-						<?php $this->toggle( 'demo_mode', __( 'Demo mode', 'noravo' ), __( 'Use sample notifications for instant previews.', 'noravo' ), $settings['demo_mode']); ?>
+						<h2><?php esc_html_e( 'Summary', 'noravo' ); ?></h2>
+						<div class="noravo-summary">
+							<div>
+								<strong><?php echo $settings['enabled'] ? esc_html__( 'Live', 'noravo' ) : esc_html__( 'Paused', 'noravo' ); ?></strong>
+								<span><?php esc_html_e( 'Notification status', 'noravo' ); ?></span>
+							</div>
+							<div>
+								<strong><?php echo $settings['demo_mode'] ? esc_html__( 'On', 'noravo' ) : esc_html__( 'Off', 'noravo' ); ?></strong>
+								<span><?php esc_html_e( 'Demo mode', 'noravo' ); ?></span>
+							</div>
+							<div>
+								<strong><?php echo esc_html((string) $enabled_count); ?></strong>
+								<span><?php esc_html_e( 'Enabled sources', 'noravo' ); ?></span>
+							</div>
+							<div>
+								<strong><?php echo esc_html(ucwords(str_replace( '-', ' ', (string) $settings['position']) ) ); ?></strong>
+								<span><?php esc_html_e( 'Position', 'noravo' ); ?></span>
+							</div>
+						</div>
 					</section>
 
 					<section class="noravo-panel">
 						<h2><?php esc_html_e( 'Integrations', 'noravo' ); ?></h2>
+						<?php foreach ( $integrations as $integration) : ?>
+							<?php $available = $integration->is_available(); ?>
+							<label class="noravo-check">
+								<input type="checkbox" <?php checked($available); ?> disabled>
+								<span>
+									<strong>
+										<?php echo esc_html( $integration->label() ); ?>
+										<?php $this->help( $integration->description() ); ?>
+									</strong>
+								</span>
+								<em><?php echo $available ? esc_html__( 'Detected', 'noravo' ) : esc_html__( 'Not installed', 'noravo' ); ?></em>
+							</label>
+						<?php endforeach; ?>
+					</section>
+				</div>
+			</div>
+		</div>
+		<?php
+	}
+
+	/** Outputs the campaigns admin page. */
+	public function render_campaigns(): void {
+		if (! current_user_can( 'manage_options' ) ) {
+			return;
+		}
+
+		$settings = $this->settings->all();
+		?>
+		<div class="wrap noravo-admin">
+			<div class="noravo-shell">
+				<?php $this->header( __( 'Campaigns', 'noravo' ), __( 'Control whether notification campaigns run on the frontend.', 'noravo' ), $settings); ?>
+				<?php $this->updated_notice(); ?>
+				<form method="post" action="<?php echo esc_url(admin_url( 'admin-post.php' ) ); ?>" class="noravo-grid">
+					<?php $this->form_fields( 'campaigns'); ?>
+					<section class="noravo-panel">
+						<h2><?php esc_html_e( 'Campaign Status', 'noravo' ); ?></h2>
+						<?php $this->toggle( 'enabled', __( 'Enable notifications', 'noravo' ), __( 'Show Noravo notifications on the frontend.', 'noravo' ), $settings['enabled']); ?>
+						<?php $this->toggle( 'demo_mode', __( 'Demo mode', 'noravo' ), __( 'Use sample notifications for instant previews.', 'noravo' ), $settings['demo_mode']); ?>
+					</section>
+					<?php $this->save_actions(); ?>
+				</form>
+			</div>
+		</div>
+		<?php
+	}
+
+	/** Outputs the integrations admin page. */
+	public function render_integrations(): void {
+		if (! current_user_can( 'manage_options' ) ) {
+			return;
+		}
+
+		$settings        = $this->settings->all();
+		$integrations    = $this->integrations->all();
+		$enabled_sources = $settings['enabled_sources'];
+		?>
+		<div class="wrap noravo-admin">
+			<div class="noravo-shell">
+				<?php $this->header( __( 'Integrations', 'noravo' ), __( 'Connect and configure notification sources.', 'noravo' ), $settings); ?>
+				<?php $this->updated_notice(); ?>
+				<form method="post" action="<?php echo esc_url(admin_url( 'admin-post.php' ) ); ?>" class="noravo-grid">
+					<?php $this->form_fields( 'integrations'); ?>
+					<section class="noravo-panel">
+						<h2><?php esc_html_e( 'Available Integrations', 'noravo' ); ?></h2>
 						<input type="hidden" name="enabled_sources[]" value="demo">
 						<?php foreach ( $integrations as $integration) : ?>
 							<label class="noravo-check">
@@ -180,7 +298,27 @@ final class AdminPage {
 							</label>
 						<?php endforeach; ?>
 					</section>
+					<?php $this->save_actions(); ?>
+				</form>
+			</div>
+		</div>
+		<?php
+	}
 
+	/** Outputs the appearance admin page. */
+	public function render_appearance(): void {
+		if (! current_user_can( 'manage_options' ) ) {
+			return;
+		}
+
+		$settings = $this->settings->all();
+		?>
+		<div class="wrap noravo-admin">
+			<div class="noravo-shell">
+				<?php $this->header( __( 'Appearance', 'noravo' ), __( 'Customize how notifications look on the frontend.', 'noravo' ), $settings); ?>
+				<?php $this->updated_notice(); ?>
+				<form method="post" action="<?php echo esc_url(admin_url( 'admin-post.php' ) ); ?>" class="noravo-grid">
+					<?php $this->form_fields( 'appearance'); ?>
 					<section class="noravo-panel">
 						<h2><?php esc_html_e( 'Display', 'noravo' ); ?></h2>
 						<div class="noravo-field">
@@ -204,6 +342,30 @@ final class AdminPage {
 								<option value="fade" <?php selected( $settings['animation'], 'fade' ); ?>><?php esc_html_e( 'Fade', 'noravo' ); ?></option>
 							</select>
 						</div>
+					</section>
+					<?php $this->save_actions(); ?>
+				</form>
+			</div>
+		</div>
+		<?php
+	}
+
+	/** Outputs the settings admin page. */
+	public function render_settings(): void {
+		if (! current_user_can( 'manage_options' ) ) {
+			return;
+		}
+
+		$settings = $this->settings->all();
+		?>
+		<div class="wrap noravo-admin">
+			<div class="noravo-shell">
+				<?php $this->header( __( 'Settings', 'noravo' ), __( 'Control global behavior and timing.', 'noravo' ), $settings); ?>
+				<?php $this->updated_notice(); ?>
+				<form method="post" action="<?php echo esc_url(admin_url( 'admin-post.php' ) ); ?>" class="noravo-grid">
+					<?php $this->form_fields( 'settings'); ?>
+					<section class="noravo-panel">
+						<h2><?php esc_html_e( 'Notification Rules', 'noravo' ); ?></h2>
 						<div class="noravo-field">
 							<label for="noravo-time-format">
 								<?php esc_html_e( 'Time display', 'noravo' ); ?>
@@ -232,12 +394,58 @@ final class AdminPage {
 							<?php $this->number( 'max_per_page', __( 'Maximum per page', 'noravo' ), __( 'The most notifications a visitor can see during a single page visit.', 'noravo' ), $settings['max_per_page']); ?>
 						</div>
 					</section>
-
-					<div class="noravo-actions">
-						<button type="submit" class="button button-primary button-hero"><?php esc_html_e( 'Save settings', 'noravo' ); ?></button>
-					</div>
+					<?php $this->save_actions(); ?>
 				</form>
 			</div>
+		</div>
+		<?php
+	}
+
+	/** Renders the shared page header. */
+	private function header(string $title, string $description, array $settings): void {
+		?>
+		<header class="noravo-hero">
+			<div>
+				<p class="noravo-kicker"><?php esc_html_e( 'Modern social proof and trust signals for WordPress', 'noravo' ); ?></p>
+				<h1><?php echo esc_html( $title); ?></h1>
+				<p><?php echo esc_html( $description); ?></p>
+			</div>
+			<div class="noravo-status">
+				<span><?php echo $settings['enabled'] ? esc_html__( 'Live', 'noravo' ) : esc_html__( 'Paused', 'noravo' ); ?></span>
+			</div>
+		</header>
+		<?php
+	}
+
+	/** Renders the saved settings notice. */
+	private function updated_notice(): void {
+		$show_updated = isset( $_GET['updated'], $_GET['_wpnonce'])
+			&& wp_verify_nonce(sanitize_text_field(wp_unslash( $_GET['_wpnonce']) ), 'noravo_settings_updated' )
+			&& 'true' === sanitize_text_field(wp_unslash( $_GET['updated']) );
+
+		if ( ! $show_updated) {
+			return;
+		}
+		?>
+		<div class="notice notice-success is-dismissible"><p><?php esc_html_e( 'Noravo settings saved.', 'noravo' ); ?></p></div>
+		<?php
+	}
+
+	/** Renders shared form hidden fields. */
+	private function form_fields(string $form): void {
+		?>
+		<input type="hidden" name="action" value="noravo_save_settings">
+		<input type="hidden" name="noravo_form" value="<?php echo esc_attr( $form); ?>">
+		<input type="hidden" name="redirect_to" value="<?php echo esc_url(admin_url( 'admin.php?page=' . sanitize_key( wp_unslash( $_GET['page'] ?? 'noravo' ) ) ) ); ?>">
+		<?php wp_nonce_field( 'noravo_save_settings' ); ?>
+		<?php
+	}
+
+	/** Renders shared form actions. */
+	private function save_actions(): void {
+		?>
+		<div class="noravo-actions">
+			<button type="submit" class="button button-primary button-hero"><?php esc_html_e( 'Save settings', 'noravo' ); ?></button>
 		</div>
 		<?php
 	}

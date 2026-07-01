@@ -92,7 +92,7 @@ final class AssetManager {
 	 * @param string $hook Current admin page hook suffix.
 	 */
 	public function enqueue_admin(string $hook): void {
-		if ( 'toplevel_page_noravo' !== $hook ) {
+		if ( 'toplevel_page_noravo' !== $hook && 0 !== strpos( $hook, 'noravo_page_noravo-' ) ) {
 			return;
 		}
 
