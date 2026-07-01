@@ -147,11 +147,25 @@ final class AdminPage {
 		}
 
 		if ( 'settings' === $form ) {
-			$updates['time_format']      = isset( $_POST['time_format']) ? sanitize_text_field(wp_unslash( $_POST['time_format']) ) : '';
-			$updates['customer_display'] = isset( $_POST['customer_display']) ? sanitize_text_field(wp_unslash( $_POST['customer_display']) ) : '';
-			$updates['initial_delay']    = isset( $_POST['initial_delay']) ? absint(wp_unslash( $_POST['initial_delay']) ) : 0;
-			$updates['interval']         = isset( $_POST['interval']) ? absint(wp_unslash( $_POST['interval']) ) : 0;
-			$updates['max_per_page']     = isset( $_POST['max_per_page']) ? absint(wp_unslash( $_POST['max_per_page']) ) : 0;
+			if (isset( $_POST['time_format']) ) {
+				$updates['time_format'] = sanitize_text_field(wp_unslash( $_POST['time_format']) );
+			}
+
+			if (isset( $_POST['customer_display']) ) {
+				$updates['customer_display'] = sanitize_text_field(wp_unslash( $_POST['customer_display']) );
+			}
+
+			if (isset( $_POST['initial_delay']) ) {
+				$updates['initial_delay'] = absint(wp_unslash( $_POST['initial_delay']) );
+			}
+
+			if (isset( $_POST['interval']) ) {
+				$updates['interval'] = absint(wp_unslash( $_POST['interval']) );
+			}
+
+			if (isset( $_POST['max_per_page']) ) {
+				$updates['max_per_page'] = absint(wp_unslash( $_POST['max_per_page']) );
+			}
 		}
 
 		if ( ! empty( $updates) ) {
@@ -385,43 +399,76 @@ final class AdminPage {
 		}
 
 		$settings = $this->settings->all();
+		$tabs     = array(
+			'general'  => __( 'General', 'noravo' ),
+			'timing'   => __( 'Timing', 'noravo' ),
+			'behavior' => __( 'Behavior', 'noravo' ),
+		);
+		$active_tab = isset( $_GET['tab']) ? sanitize_key(wp_unslash( $_GET['tab']) ) : 'general';
+
+		if ( ! isset( $tabs[$active_tab]) ) {
+			$active_tab = 'general';
+		}
 		?>
 		<div class="wrap noravo-admin">
-			<div class="noravo-shell">
-				<?php $this->header( __( 'Settings', 'noravo' ), __( 'Control global behavior and timing.', 'noravo' ), $settings); ?>
+			<div class="noravo-shell noravo-settings-shell">
 				<?php $this->updated_notice(); ?>
-				<form method="post" action="<?php echo esc_url(admin_url( 'admin-post.php' ) ); ?>" class="noravo-grid">
+				<nav class="noravo-settings-tabbar" aria-label="<?php esc_attr_e( 'Settings sections', 'noravo' ); ?>">
+					<?php foreach ( $tabs as $tab => $label ) : ?>
+						<a
+							class="noravo-settings-tab <?php echo $active_tab === $tab ? 'is-active' : ''; ?>"
+							href="<?php echo esc_url(add_query_arg(array( 'page' => 'noravo-settings', 'tab' => $tab), admin_url( 'admin.php' ) ) ); ?>"
+						>
+							<?php echo esc_html( $label); ?>
+						</a>
+					<?php endforeach; ?>
+				</nav>
+				<form method="post" action="<?php echo esc_url(admin_url( 'admin-post.php' ) ); ?>" class="noravo-settings-form">
 					<?php $this->form_fields( 'settings'); ?>
-					<section class="noravo-panel">
-						<h2><?php esc_html_e( 'Notification Rules', 'noravo' ); ?></h2>
-						<div class="noravo-field">
-							<label for="noravo-time-format">
-								<?php esc_html_e( 'Time display', 'noravo' ); ?>
-								<?php $this->help(__( 'How notification timestamps are shown after the first day.', 'noravo' ) ); ?>
-							</label>
-							<select id="noravo-time-format" name="time_format">
-								<option value="rounded" <?php selected( $settings['time_format'], 'rounded' ); ?>><?php esc_html_e( 'Rounded', 'noravo' ); ?></option>
-								<option value="days_hours" <?php selected( $settings['time_format'], 'days_hours' ); ?>><?php esc_html_e( 'Days and hours', 'noravo' ); ?></option>
-								<option value="full" <?php selected( $settings['time_format'], 'full' ); ?>><?php esc_html_e( 'Full detail', 'noravo' ); ?></option>
-							</select>
-						</div>
-						<div class="noravo-field">
-							<label for="noravo-customer-display">
-								<?php esc_html_e( 'Customer display', 'noravo' ); ?>
-								<?php $this->help(__( 'Choose how customer names appear in purchase notifications.', 'noravo' ) ); ?>
-							</label>
-							<select id="noravo-customer-display" name="customer_display">
-								<option value="location" <?php selected( $settings['customer_display'], 'location' ); ?>><?php esc_html_e( 'Hide name, show location', 'noravo' ); ?></option>
-								<option value="full_name" <?php selected( $settings['customer_display'], 'full_name' ); ?>><?php esc_html_e( 'Show full name', 'noravo' ); ?></option>
-								<option value="masked_name" <?php selected( $settings['customer_display'], 'masked_name' ); ?>><?php esc_html_e( 'Show first name and masked last name', 'noravo' ); ?></option>
-							</select>
-						</div>
-						<div class="noravo-field-row">
-							<?php $this->number( 'initial_delay', __( 'Initial delay', 'noravo' ), __( 'How long Noravo waits before showing the first notification, in milliseconds.', 'noravo' ), $settings['initial_delay']); ?>
-							<?php $this->number( 'interval', __( 'Interval', 'noravo' ), __( 'How long Noravo waits between notifications, in milliseconds.', 'noravo' ), $settings['interval']); ?>
-							<?php $this->number( 'max_per_page', __( 'Maximum per page', 'noravo' ), __( 'The most notifications a visitor can see during a single page visit.', 'noravo' ), $settings['max_per_page']); ?>
-						</div>
-					</section>
+					<?php if ( 'general' === $active_tab ) : ?>
+						<section class="noravo-panel noravo-settings-panel">
+							<h2><?php esc_html_e( 'General', 'noravo' ); ?></h2>
+							<div class="noravo-field">
+								<label for="noravo-time-format">
+									<?php esc_html_e( 'Time display', 'noravo' ); ?>
+									<?php $this->help(__( 'How notification timestamps are shown after the first day.', 'noravo' ) ); ?>
+								</label>
+								<select id="noravo-time-format" name="time_format">
+									<option value="rounded" <?php selected( $settings['time_format'], 'rounded' ); ?>><?php esc_html_e( 'Rounded', 'noravo' ); ?></option>
+									<option value="days_hours" <?php selected( $settings['time_format'], 'days_hours' ); ?>><?php esc_html_e( 'Days and hours', 'noravo' ); ?></option>
+									<option value="full" <?php selected( $settings['time_format'], 'full' ); ?>><?php esc_html_e( 'Full detail', 'noravo' ); ?></option>
+								</select>
+							</div>
+							<div class="noravo-field">
+								<label for="noravo-customer-display">
+									<?php esc_html_e( 'Customer display', 'noravo' ); ?>
+									<?php $this->help(__( 'Choose how customer names appear in purchase notifications.', 'noravo' ) ); ?>
+								</label>
+								<select id="noravo-customer-display" name="customer_display">
+									<option value="location" <?php selected( $settings['customer_display'], 'location' ); ?>><?php esc_html_e( 'Hide name, show location', 'noravo' ); ?></option>
+									<option value="full_name" <?php selected( $settings['customer_display'], 'full_name' ); ?>><?php esc_html_e( 'Show full name', 'noravo' ); ?></option>
+									<option value="masked_name" <?php selected( $settings['customer_display'], 'masked_name' ); ?>><?php esc_html_e( 'Show first name and masked last name', 'noravo' ); ?></option>
+								</select>
+							</div>
+						</section>
+					<?php endif; ?>
+					<?php if ( 'timing' === $active_tab ) : ?>
+						<section class="noravo-panel noravo-settings-panel">
+							<h2><?php esc_html_e( 'Timing', 'noravo' ); ?></h2>
+							<div class="noravo-settings-fields">
+								<?php $this->number( 'initial_delay', __( 'Initial delay', 'noravo' ), __( 'How long Noravo waits before showing the first notification, in milliseconds.', 'noravo' ), $settings['initial_delay']); ?>
+								<?php $this->number( 'interval', __( 'Interval', 'noravo' ), __( 'How long Noravo waits between notifications, in milliseconds.', 'noravo' ), $settings['interval']); ?>
+							</div>
+						</section>
+					<?php endif; ?>
+					<?php if ( 'behavior' === $active_tab ) : ?>
+						<section class="noravo-panel noravo-settings-panel">
+							<h2><?php esc_html_e( 'Behavior', 'noravo' ); ?></h2>
+							<div class="noravo-settings-fields">
+								<?php $this->number( 'max_per_page', __( 'Maximum per page', 'noravo' ), __( 'The most notifications a visitor can see during a single page visit.', 'noravo' ), $settings['max_per_page']); ?>
+							</div>
+						</section>
+					<?php endif; ?>
 					<?php $this->save_actions(); ?>
 				</form>
 			</div>
@@ -461,10 +508,20 @@ final class AdminPage {
 
 	/** Renders shared form hidden fields. */
 	private function form_fields(string $form): void {
+		$page         = sanitize_key( wp_unslash( $_GET['page'] ?? 'noravo' ) );
+		$redirect_url = admin_url( 'admin.php?page=' . $page );
+
+		if ( 'noravo-settings' === $page && isset( $_GET['tab']) ) {
+			$tab = sanitize_key(wp_unslash( $_GET['tab']) );
+
+			if (in_array( $tab, array( 'general', 'timing', 'behavior' ), true) ) {
+				$redirect_url = add_query_arg( 'tab', $tab, $redirect_url);
+			}
+		}
 		?>
 		<input type="hidden" name="action" value="noravo_save_settings">
 		<input type="hidden" name="noravo_form" value="<?php echo esc_attr( $form); ?>">
-		<input type="hidden" name="redirect_to" value="<?php echo esc_url(admin_url( 'admin.php?page=' . sanitize_key( wp_unslash( $_GET['page'] ?? 'noravo' ) ) ) ); ?>">
+		<input type="hidden" name="redirect_to" value="<?php echo esc_url( $redirect_url ); ?>">
 		<?php wp_nonce_field( 'noravo_save_settings' ); ?>
 		<?php
 	}
