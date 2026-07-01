@@ -307,6 +307,7 @@ final class AdminPage {
 		}
 
 		$trigger_groups = $this->automation_trigger_groups();
+		$action_groups  = $this->automation_action_groups();
 		?>
 		<div class="wrap noravo-admin">
 			<div class="noravo-shell noravo-automation-shell">
@@ -367,9 +368,9 @@ final class AdminPage {
 				<div class="noravo-rule-modal" id="noravo-rule-modal" aria-hidden="true">
 					<div class="noravo-rule-modal-panel" role="dialog" aria-modal="true" aria-labelledby="noravo-rule-modal-title">
 						<header class="noravo-rule-modal-header">
-							<h2 id="noravo-rule-modal-title"><?php esc_html_e( 'Select a trigger for your automation rule', 'noravo' ); ?></h2>
+							<h2 id="noravo-rule-modal-title" data-noravo-modal-title><?php esc_html_e( 'Select a trigger for your automation rule', 'noravo' ); ?></h2>
 							<div class="noravo-rule-modal-actions">
-								<button type="button" aria-label="<?php esc_attr_e( 'Go back', 'noravo' ); ?>" data-noravo-close-rule-modal>
+								<button type="button" aria-label="<?php esc_attr_e( 'Go back', 'noravo' ); ?>" data-noravo-rule-back hidden>
 									<span class="dashicons dashicons-arrow-left-alt2"></span>
 								</button>
 								<button type="button" aria-label="<?php esc_attr_e( 'Close', 'noravo' ); ?>" data-noravo-close-rule-modal>
@@ -377,38 +378,73 @@ final class AdminPage {
 								</button>
 							</div>
 						</header>
-						<div class="noravo-rule-modal-body">
-							<nav class="noravo-trigger-categories" aria-label="<?php esc_attr_e( 'Trigger categories', 'noravo' ); ?>">
-								<?php foreach ( $trigger_groups as $group_key => $group ) : ?>
-									<button type="button" class="<?php echo 'orders' === $group_key ? 'is-active' : ''; ?>" data-noravo-trigger-group="<?php echo esc_attr( $group_key); ?>">
-										<?php echo esc_html( $group['label']); ?>
-									</button>
-								<?php endforeach; ?>
-							</nav>
-							<div class="noravo-trigger-groups">
-								<?php foreach ( $trigger_groups as $group_key => $group ) : ?>
-									<section class="noravo-trigger-group <?php echo 'orders' === $group_key ? 'is-active' : ''; ?>" data-noravo-trigger-panel="<?php echo esc_attr( $group_key); ?>">
-										<h3><?php echo esc_html( $group['label']); ?></h3>
-										<div class="noravo-trigger-cards">
-											<?php if (empty( $group['triggers']) ) : ?>
-												<p class="noravo-trigger-empty"><?php esc_html_e( 'No triggers are available in this section yet.', 'noravo' ); ?></p>
-											<?php endif; ?>
-											<?php foreach ( $group['triggers'] as $trigger ) : ?>
-												<article class="noravo-trigger-card">
-													<header>
-														<h4><?php echo esc_html( $trigger['title']); ?></h4>
-														<span class="dashicons dashicons-money-alt" aria-hidden="true"></span>
-													</header>
-													<p><?php echo esc_html( $trigger['description']); ?></p>
-													<button type="button" class="button button-primary">
-														<?php esc_html_e( 'Use trigger', 'noravo' ); ?>
-														<span class="dashicons dashicons-arrow-right-alt" aria-hidden="true"></span>
-													</button>
-												</article>
-											<?php endforeach; ?>
-										</div>
-									</section>
-								<?php endforeach; ?>
+						<div class="noravo-rule-modal-step is-active" data-noravo-rule-step="trigger">
+							<div class="noravo-rule-modal-body">
+								<nav class="noravo-trigger-categories" aria-label="<?php esc_attr_e( 'Trigger categories', 'noravo' ); ?>">
+									<?php foreach ( $trigger_groups as $group_key => $group ) : ?>
+										<button type="button" class="<?php echo 'orders' === $group_key ? 'is-active' : ''; ?>" data-noravo-trigger-group="<?php echo esc_attr( $group_key); ?>">
+											<?php echo esc_html( $group['label']); ?>
+										</button>
+									<?php endforeach; ?>
+								</nav>
+								<div class="noravo-trigger-groups">
+									<?php foreach ( $trigger_groups as $group_key => $group ) : ?>
+										<section class="noravo-trigger-group <?php echo 'orders' === $group_key ? 'is-active' : ''; ?>" data-noravo-trigger-panel="<?php echo esc_attr( $group_key); ?>">
+											<h3><?php echo esc_html( $group['label']); ?></h3>
+											<div class="noravo-trigger-cards">
+												<?php if (empty( $group['triggers']) ) : ?>
+													<p class="noravo-trigger-empty"><?php esc_html_e( 'No triggers are available in this section yet.', 'noravo' ); ?></p>
+												<?php endif; ?>
+												<?php foreach ( $group['triggers'] as $trigger ) : ?>
+													<article class="noravo-trigger-card">
+														<header>
+															<h4><?php echo esc_html( $trigger['title']); ?></h4>
+															<span class="dashicons dashicons-money-alt" aria-hidden="true"></span>
+														</header>
+														<p><?php echo esc_html( $trigger['description']); ?></p>
+														<button type="button" class="button button-primary" data-noravo-select-trigger="<?php echo esc_attr( $trigger['id']); ?>">
+															<?php esc_html_e( 'Use trigger', 'noravo' ); ?>
+															<span class="dashicons dashicons-arrow-right-alt" aria-hidden="true"></span>
+														</button>
+													</article>
+												<?php endforeach; ?>
+											</div>
+										</section>
+									<?php endforeach; ?>
+								</div>
+							</div>
+						</div>
+						<div class="noravo-rule-modal-step" data-noravo-rule-step="action">
+							<div class="noravo-rule-modal-body">
+								<nav class="noravo-trigger-categories" aria-label="<?php esc_attr_e( 'Action categories', 'noravo' ); ?>">
+									<?php foreach ( $action_groups as $group_key => $group ) : ?>
+										<button type="button" class="<?php echo 'campaigns' === $group_key ? 'is-active' : ''; ?>" data-noravo-action-group="<?php echo esc_attr( $group_key); ?>">
+											<?php echo esc_html( $group['label']); ?>
+										</button>
+									<?php endforeach; ?>
+								</nav>
+								<div class="noravo-trigger-groups">
+									<?php foreach ( $action_groups as $group_key => $group ) : ?>
+										<section class="noravo-trigger-group <?php echo 'campaigns' === $group_key ? 'is-active' : ''; ?>" data-noravo-action-panel="<?php echo esc_attr( $group_key); ?>">
+											<h3><?php echo esc_html( $group['label']); ?></h3>
+											<div class="noravo-trigger-cards">
+												<?php foreach ( $group['actions'] as $action ) : ?>
+													<article class="noravo-trigger-card">
+														<header>
+															<h4><?php echo esc_html( $action['title']); ?></h4>
+															<span class="dashicons dashicons-megaphone" aria-hidden="true"></span>
+														</header>
+														<p><?php echo esc_html( $action['description']); ?></p>
+														<button type="button" class="button button-primary" data-noravo-select-action="<?php echo esc_attr( $action['id']); ?>">
+															<?php esc_html_e( 'Use action', 'noravo' ); ?>
+															<span class="dashicons dashicons-arrow-right-alt" aria-hidden="true"></span>
+														</button>
+													</article>
+												<?php endforeach; ?>
+											</div>
+										</section>
+									<?php endforeach; ?>
+								</div>
 							</div>
 						</div>
 					</div>
@@ -736,6 +772,33 @@ final class AdminPage {
 			'orders'   => array(
 				'label'    => __( 'Orders', 'noravo' ),
 				'triggers' => $order_triggers,
+			),
+		);
+	}
+
+	/**
+	 * Returns automation action groups shown after a trigger is selected.
+	 *
+	 * @return array<string, array{label: string, actions: array<int, array<string, string>>}>
+	 */
+	private function automation_action_groups(): array {
+		$campaign_actions = array(
+			array(
+				'id'          => 'display_store_purchases',
+				'title'       => __( 'Display Store Purchases', 'noravo' ),
+				'description' => __( 'Show the WooCommerce purchase notification campaign on the frontend.', 'noravo' ),
+				'campaign'    => 'woocommerce',
+			),
+		);
+
+		return array(
+			'featured'  => array(
+				'label'   => __( 'Featured', 'noravo' ),
+				'actions' => $campaign_actions,
+			),
+			'campaigns' => array(
+				'label'   => __( 'Campaigns', 'noravo' ),
+				'actions' => $campaign_actions,
 			),
 		);
 	}

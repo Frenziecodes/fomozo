@@ -614,6 +614,16 @@
 	font-size: 24px;
 }
 
+.noravo-rule-modal-step {
+	display: none;
+	min-height: 0;
+	overflow: auto;
+}
+
+.noravo-rule-modal-step.is-active {
+	display: block;
+}
+
 .noravo-rule-modal-body {
 	display: grid;
 	grid-template-columns: 240px minmax(0, 1fr);
