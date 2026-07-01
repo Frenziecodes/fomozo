@@ -39,6 +39,7 @@ final class AdminPage {
 		add_action( 'admin_menu', array( $this, 'add_menu' ) );
 		add_action( 'admin_enqueue_scripts', array( $this->assets, 'enqueue_admin' ) );
 		add_action( 'admin_post_noravo_save_settings', array( $this, 'save' ) );
+		add_action( 'admin_post_noravo_toggle_integration', array( $this, 'toggle_integration' ) );
 		add_filter( 'plugin_action_links_' . NORAVO_BASENAME, array( $this, 'action_links' ) );
 	}
 
@@ -165,6 +166,43 @@ final class AdminPage {
 		exit;
 	}
 
+	/** Activates or deactivates a single integration source. */
+	public function toggle_integration(): void {
+		if (! current_user_can( 'manage_options' ) ) {
+			wp_die(esc_html__( 'You do not have permission to manage Noravo integrations.', 'noravo' ) );
+		}
+
+		$integration = isset( $_GET['integration']) ? sanitize_key(wp_unslash( $_GET['integration']) ) : '';
+		$state       = isset( $_GET['state']) ? sanitize_key(wp_unslash( $_GET['state']) ) : '';
+
+		check_admin_referer( 'noravo_toggle_integration_' . $integration );
+
+		$settings = $this->settings->all();
+		$sources  = array_values(array_unique(array_merge(array( 'demo' ), (array) $settings['enabled_sources']) ) );
+
+		if ( 'activate' === $state && $this->integration_is_available( $integration) ) {
+			$sources[] = $integration;
+		}
+
+		if ( 'deactivate' === $state ) {
+			$sources = array_values(array_diff( $sources, array( $integration) ) );
+		}
+
+		$this->settings->update(
+			array(
+				'enabled_sources' => array_values(array_unique( $sources) ),
+			)
+		);
+
+		wp_safe_redirect(
+			wp_nonce_url(
+				add_query_arg( 'updated', 'true', admin_url( 'admin.php?page=noravo-integrations' ) ),
+				'noravo_settings_updated'
+			)
+		);
+		exit;
+	}
+
 	/** Outputs the dashboard admin page. */
 	public function render_dashboard(): void {
 		if (! current_user_can( 'manage_options' ) ) {
@@ -275,34 +313,21 @@ final class AdminPage {
 			return;
 		}
 
-		$settings        = $this->settings->all();
-		$integrations    = $this->integrations->all();
-		$enabled_sources = $settings['enabled_sources'];
+		$settings = $this->settings->all();
+
+		if ( ! class_exists( '\WP_List_Table' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/class-wp-list-table.php';
+		}
+
+		$table = new IntegrationsListTable( $this->integrations->all(), $settings['enabled_sources']);
+		$table->prepare_items();
 		?>
 		<div class="wrap noravo-admin">
 			<div class="noravo-shell">
-				<?php $this->header( __( 'Integrations', 'noravo' ), __( 'Connect and configure notification sources.', 'noravo' ), $settings); ?>
 				<?php $this->updated_notice(); ?>
-				<form method="post" action="<?php echo esc_url(admin_url( 'admin-post.php' ) ); ?>" class="noravo-grid">
-					<?php $this->form_fields( 'integrations'); ?>
-					<section class="noravo-panel">
-						<h2><?php esc_html_e( 'Available Integrations', 'noravo' ); ?></h2>
-						<input type="hidden" name="enabled_sources[]" value="demo">
-						<?php foreach ( $integrations as $integration) : ?>
-							<label class="noravo-check">
-								<input type="checkbox" name="enabled_sources[]" value="<?php echo esc_attr( $integration->id() ); ?>" <?php checked(in_array( $integration->id(), $enabled_sources, true) ); ?> <?php disabled(! $integration->is_available() ); ?>>
-								<span>
-									<strong>
-										<?php echo esc_html( $integration->label() ); ?>
-										<?php $this->help( $integration->description() ); ?>
-									</strong>
-								</span>
-								<em><?php echo $integration->is_available() ? esc_html__( 'Available', 'noravo' ) : esc_html__( 'Install plugin', 'noravo' ); ?></em>
-							</label>
-						<?php endforeach; ?>
-					</section>
-					<?php $this->save_actions(); ?>
-				</form>
+				<div class="noravo-list-table-wrap">
+					<?php $table->display(); ?>
+				</div>
 			</div>
 		</div>
 		<?php
@@ -451,6 +476,17 @@ final class AdminPage {
 			<button type="submit" class="button button-primary button-hero"><?php esc_html_e( 'Save settings', 'noravo' ); ?></button>
 		</div>
 		<?php
+	}
+
+	/** Whether a registered integration is currently available. */
+	private function integration_is_available(string $integration_id): bool {
+		foreach ( $this->integrations->all() as $integration ) {
+			if ( $integration->id() === $integration_id ) {
+				return $integration->is_available();
+			}
+		}
+
+		return false;
 	}
 
 	/** Renders a styled checkbox toggle field. */

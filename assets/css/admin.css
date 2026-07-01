@@ -216,6 +216,64 @@
 	white-space: nowrap;
 }
 
+.noravo-list-table-wrap {
+	margin-top: 0;
+}
+
+.noravo-integrations-list-table {
+	margin-top: 0;
+}
+
+.noravo-integrations-list-table .column-integration {
+	width: 30%;
+}
+
+.noravo-integrations-list-table .column-description {
+	width: 50%;
+}
+
+.noravo-integrations-list-table .column-status {
+	width: 20%;
+	text-align: center;
+}
+
+.noravo-integrations-list-table td.column-status {
+	vertical-align: middle;
+}
+
+.noravo-integrations-list-table .column-integration strong {
+	display: block;
+	font-size: 14px;
+	line-height: 1.35;
+}
+
+.noravo-integrations-list-table .column-description .description {
+	color: #646970;
+}
+
+.noravo-status-badge {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 58px;
+	min-height: 22px;
+	padding: 0 8px;
+	font-size: 11px;
+	font-weight: 700;
+	line-height: 1;
+	border-radius: 999px;
+}
+
+.noravo-status-badge.is-active {
+	color: #0f5132;
+	background: #d1fae5;
+}
+
+.noravo-status-badge.is-inactive {
+	color: #52616b;
+	background: #eef3f6;
+}
+
 .noravo-field {
 	display: grid;
 	align-content: start;
