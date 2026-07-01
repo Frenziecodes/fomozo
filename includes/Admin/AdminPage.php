@@ -66,8 +66,8 @@ final class AdminPage {
 
 		add_submenu_page(
 			'noravo',
-			__( 'Campaigns', 'noravo' ),
-			__( 'Campaigns', 'noravo' ),
+			__( 'Automation Rules', 'noravo' ),
+			__( 'Automation Rules', 'noravo' ),
 			'manage_options',
 			'noravo-campaigns',
 			array( $this, 'render_campaigns' )
@@ -300,27 +300,68 @@ final class AdminPage {
 		<?php
 	}
 
-	/** Outputs the campaigns admin page. */
+	/** Outputs the automation rules admin page. */
 	public function render_campaigns(): void {
 		if (! current_user_can( 'manage_options' ) ) {
 			return;
 		}
-
-		$settings = $this->settings->all();
 		?>
 		<div class="wrap noravo-admin">
-			<div class="noravo-shell">
-				<?php $this->header( __( 'Campaigns', 'noravo' ), __( 'Control whether notification campaigns run on the frontend.', 'noravo' ), $settings); ?>
-				<?php $this->updated_notice(); ?>
-				<form method="post" action="<?php echo esc_url(admin_url( 'admin-post.php' ) ); ?>" class="noravo-grid">
-					<?php $this->form_fields( 'campaigns'); ?>
-					<section class="noravo-panel">
-						<h2><?php esc_html_e( 'Campaign Status', 'noravo' ); ?></h2>
-						<?php $this->toggle( 'enabled', __( 'Enable notifications', 'noravo' ), __( 'Show Noravo notifications on the frontend.', 'noravo' ), $settings['enabled']); ?>
-						<?php $this->toggle( 'demo_mode', __( 'Demo mode', 'noravo' ), __( 'Use sample notifications for instant previews.', 'noravo' ), $settings['demo_mode']); ?>
-					</section>
-					<?php $this->save_actions(); ?>
-				</form>
+			<div class="noravo-shell noravo-automation-shell">
+				<div class="noravo-automation-header">
+					<div>
+						<h1><?php esc_html_e( 'Automation Rules', 'noravo' ); ?></h1>
+						<p><?php esc_html_e( 'Create rules that automatically run actions when certain events occur.', 'noravo' ); ?></p>
+					</div>
+					<a href="#" class="button button-primary noravo-automation-create"><?php esc_html_e( 'Create New Rule', 'noravo' ); ?></a>
+				</div>
+				<div class="noravo-rule-stats">
+					<div class="noravo-rule-stat">
+						<span class="noravo-rule-stat-icon is-total"><span class="dashicons dashicons-networking"></span></span>
+						<strong>0</strong>
+						<small><?php esc_html_e( 'Total Rules', 'noravo' ); ?></small>
+					</div>
+					<div class="noravo-rule-stat">
+						<span class="noravo-rule-stat-icon is-active"><span class="dashicons dashicons-yes-alt"></span></span>
+						<strong>0</strong>
+						<small><?php esc_html_e( 'Active', 'noravo' ); ?></small>
+					</div>
+					<div class="noravo-rule-stat">
+						<span class="noravo-rule-stat-icon is-inactive"><span class="dashicons dashicons-dismiss"></span></span>
+						<strong>0</strong>
+						<small><?php esc_html_e( 'Inactive', 'noravo' ); ?></small>
+					</div>
+				</div>
+				<div class="noravo-rules-table-shell">
+					<div class="noravo-rules-toolbar">
+						<label class="noravo-rules-search">
+							<span class="dashicons dashicons-search" aria-hidden="true"></span>
+							<input type="search" placeholder="<?php esc_attr_e( 'Search', 'noravo' ); ?>">
+						</label>
+						<div class="noravo-rules-tools">
+							<button type="button"><?php esc_html_e( 'Delete all', 'noravo' ); ?></button>
+							<span class="dashicons dashicons-admin-generic" aria-hidden="true"></span>
+						</div>
+					</div>
+					<table class="widefat fixed noravo-rules-table">
+						<thead>
+							<tr>
+								<th><?php esc_html_e( 'Rule', 'noravo' ); ?></th>
+								<th><?php esc_html_e( 'Steps', 'noravo' ); ?></th>
+								<th><?php esc_html_e( 'Times Run', 'noravo' ); ?></th>
+								<th><?php esc_html_e( 'Status', 'noravo' ); ?></th>
+								<th><?php esc_html_e( 'Updated', 'noravo' ); ?></th>
+								<th><?php esc_html_e( 'Created', 'noravo' ); ?> <span aria-hidden="true">&darr;</span></th>
+								<th><?php esc_html_e( 'Actions', 'noravo' ); ?></th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td colspan="7" class="noravo-rules-empty"><?php esc_html_e( 'No results', 'noravo' ); ?></td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
 			</div>
 		</div>
 		<?php
