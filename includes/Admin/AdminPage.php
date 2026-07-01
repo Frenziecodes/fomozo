@@ -52,7 +52,7 @@ final class AdminPage {
 			'noravo',
 			array( $this, 'render_dashboard' ),
 			'dashicons-megaphone',
-			58
+			25
 		);
 
 		add_submenu_page(
